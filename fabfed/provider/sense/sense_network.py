@@ -46,7 +46,7 @@ class SenseNetwork(Network):
             raise Exception(f"Creation failed for {si_uuid} {status}")
 
         logger.debug(f"Retrieving details {self.name} {status}")
-        instance_dict = sense_utils.service_instance_details(si_uuid=si_uuid)
+        instance_dict = sense_utils.service_instance_details(si_uuid=si_uuid, alias=self.name)
 
         import json
 

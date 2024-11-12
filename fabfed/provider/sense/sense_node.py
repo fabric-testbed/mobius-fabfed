@@ -32,7 +32,7 @@ class SenseNode(Node):
             raise SenseException(f"Instance is not ready:status={status}")
         
         """ retrieve the gateway type from intents """
-        instance_dict = sense_utils.service_instance_details(si_uuid=si_uuid)
+        instance_dict = sense_utils.service_instance_details(si_uuid=si_uuid, alias=self.network)
         gateway_type = instance_dict.get("intents")[0]['json']['data']['gateways'][0]['type'].upper()
         if "GCP" in gateway_type:
             template_file = 'gcp-template.json'

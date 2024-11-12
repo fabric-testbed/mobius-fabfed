@@ -280,10 +280,10 @@ def instance_get_status(*, client=None, si_uuid):
     return workflow_api.instance_get_status(si_uuid=si_uuid)
 
 
-def service_instance_details(*, client=None, si_uuid):
+def service_instance_details(*, client=None, si_uuid, alias):
     client = client or get_client()
     discover_api = DiscoverApi(req_wrapper=client)
-    response = discover_api.discover_service_instances_get()
+    response = discover_api.discover_service_instances_get(search=alias)
     # print(json.dumps(json.loads(response), indent=2))
     response = json.loads(response)
     instances = response['instances']
