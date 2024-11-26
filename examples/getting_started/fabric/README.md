@@ -1,6 +1,6 @@
 ### Fabric Example:
 
-In this example, the configuration is in a single file ```fabric_config.fab```. We can break this file into many ```.fab``` files and in any way we see fit. Remember Fabfed does not care about how the files are named. It loads all the files matching the pattern ```*.fab``` in no particular order and then parses the assembled result.
+In this example, the configuration is in a single file ```config.fab```. We can break this file into many ```.fab``` files and in any way we see fit. Remember Fabfed does not care about how the files are named. It loads all the files matching the pattern ```*.fab``` in no particular order and then parses the assembled result.
     
 ```
 fabfed workflow --session <session> -validate
@@ -16,7 +16,7 @@ fabfed workflow --session <session> -validate
 
 
 ```
-cd examples/fabric
+cd examples/getting_started/fabric
 fabfed workflow --help
 
 ## validate config
