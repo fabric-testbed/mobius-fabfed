@@ -225,7 +225,6 @@ class FabricSlice:
                 if network:
                     from fabrictestbed_extensions.fablib.network_service import NetworkService
 
-
                     itf = node.delegate.add_component(model=node.nic_model,
                                                       name=FABRIC_STITCH_NET_IFACE_NAME).get_interfaces()[0]
                     self.logger.info(
@@ -509,8 +508,38 @@ class FabricSlice:
         if self.slice_created and not self.slice_modified:
             return
 
-        assert(self.submitted, "expecting slice to have been submitted")
+        assert (self.submitted, "expecting slice to have been submitted")
+
         self.logger.info(f"Waiting for slice {self.name} to be stable")
+
+        rtype = resource.get(Constants.RES_TYPE)
+
+        # TODO do not bother if no nodes
+        # TODO do we need to handle reloading of network?
+        if rtype == Constants.RES_TYPE_NETWORK.lower():
+            from fabrictestbed_extensions.fablib.fablib import fablib
+            import functools
+
+            for attempt in range(15):
+                self.slice_object = fablib.get_slice(name=self.provider.name)
+                slivers = self.slice_object.get_slivers()
+                slivers = list(filter(lambda s: s.sliver_type == 'NetworkServiceSliver', slivers))
+                net_name = self.provider.resource_name(resource)
+                slivers = list(filter(lambda s: s.sliver['Name'] == net_name, slivers))
+                net_name = self.provider.resource_name(resource)
+                net = next(filter(lambda n: n.name == net_name, self.networks))
+                count = map(lambda s: 1 if s.state.lower() == 'active' else 0, slivers)
+                count = functools.reduce(lambda a, b: a + b, count)
+
+                if len(slivers) == count:
+                    self.logger.info(f"Network sliver is active:{net_name}.")
+                    self.resource_listener.on_created(source=self, provider=self.provider, resource=net)
+                    return
+
+                self.logger.warning(f"Waiting on active network sliver: {net_name}:attempt={attempt}")
+                import time
+
+                time.sleep(10)
 
         try:
             self.slice_object.wait(timeout=24 * 60, progress=True)
